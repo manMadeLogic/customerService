@@ -501,23 +501,23 @@ def validate_flight(slots):
     if departure and not isvalid_city(departure):
         return build_validation_result(
             False,
-            'PickUpCity',
+            'departure',
             'We currently do not support {} as a valid destination.  Can you try a different city?'.format(departure)
         )
 
     if destination and not isvalid_city(destination):
         return build_validation_result(
             False,
-            'PickUpCity',
+            'destination',
             'We currently do not support {} as a valid destination.  Can you try a different city?'.format(destination)
         )
 
     if date:
         if not isvalid_date(date):
-            return build_validation_result(False, 'PickUpDate',
-                                           'I did not understand your departure date.  When would you like to pick up your car rental?')
+            return build_validation_result(False, 'date',
+                                           'I did not understand your departure date.  When would you like to depart?')
         if datetime.datetime.strptime(date, '%Y-%m-%d').date() <= datetime.date.today():
-            return build_validation_result(False, 'PickUpDate',
+            return build_validation_result(False, 'date',
                                            'Reservations must be scheduled at least one day in advance.  Can you try a different date?')
     return {'isValid': True}
 
@@ -557,8 +557,7 @@ def book_flight(intent_request):
 
     if intent_request['invocationSource'] == 'DialogCodeHook':
         # Validate any slots which have been specified.  If any are invalid, re-elicit for their value
-        validation_result = validate_flight(slots)
-        # validation_result = validate_book_car(intent_request['currentIntent']['slots'])
+        validation_result = validate_flight(intent_request['currentIntent']['slots'])
         if not validation_result['isValid']:
             slots[validation_result['violatedSlot']] = None
 
